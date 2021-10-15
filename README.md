@@ -3,7 +3,7 @@ Home Assistant presence detection for the Huawei HG659 router
 
 **Maintenance Note:** I no longer have my trusty HG659, so I don't have any way of testing changes. Use at your own risk!
 
-## Installation
+## 🔌  Installation
 To enable presence detection in Home Assistant, clone this repo in your installation's `custom_components` directory as `hg659`:
 
 ```console
@@ -17,7 +17,7 @@ Receiving objects: 100% (12/12), 5.36 KiB | 5.36 MiB/s, done.
 Resolving deltas: 100% (1/1), done.
 ```
 
-## Home Assistant configuration
+## ⚙️  Home Assistant configuration
 
 Once you've installed the code, you need to configure 
 
@@ -39,7 +39,7 @@ hg659_password: YOUR_PASSWORD
 
 Restart Home Assistant and you should be good to go! You will see `known_devices.yaml` start to get populated with devices matching those you see as connected to the network in the router's UI.
 
-### Logging
+### 🪵  Logging
 If you want to keep an eye on the presence detection you can enable logging in your configuration file as well:
 ```yaml
 # configuration.yaml
@@ -49,7 +49,7 @@ logger:
     custom_components.hg659: info
 ```
 
-## Inspiration
+## 🌟  Inspiration
 
 The device tracker code is heavily inspired by the official [Huawei Router](https://github.com/home-assistant/core/tree/dev/homeassistant/components/huawei_router) device tracker, which you have undoubtedly encountered before finding this project.
 
