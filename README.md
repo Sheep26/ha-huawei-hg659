@@ -44,7 +44,6 @@ If you want to keep an eye on the presence detection you can enable logging in y
 ```yaml
 # configuration.yaml
 logger:
-logger:
   default: warning
   logs:
     custom_components.hg659: info
