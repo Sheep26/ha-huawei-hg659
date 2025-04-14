@@ -1,10 +1,9 @@
 # HG659 home assistant integration.
 import logging
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
+from typing import Final
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup(hass, config):
     # Setup component.
-    pass
+    return True
