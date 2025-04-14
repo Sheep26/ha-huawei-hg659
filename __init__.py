@@ -2,6 +2,8 @@
 import logging
 from typing import Final
 
+from client import HG659Client
+
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "huawei_hg659"

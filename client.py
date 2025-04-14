@@ -4,8 +4,19 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-from . import util
+import hashlib
+import base64 as b64
 
+_WHITESPACE_RX = re.compile(r"\s")
+
+def base64(s):
+    #Base64 encode a string, removing all whitespace from the output.
+    encoded = b64.encodebytes(s.encode()).decode()
+    return _WHITESPACE_RX.sub("", encoded)  # remove all whitespace
+
+def sha256(s):
+    #Encode a string into its SHA256 hex digest
+    return hashlib.sha256(s.encode()).hexdigest()
 
 class HG659Client:
     _response_data_rx = re.compile(r"/\*(.*)\*/$")
@@ -59,6 +70,17 @@ class HG659Client:
         response = self._post("/api/system/user_logout", json=data)
         return response.status_code
 
+    def get_connected_devices(self) -> int:
+        devices = self.get_devices()
+        
+        count = 0
+        
+        for device in devices:
+            if device["Active"]:
+                count += 1
+        
+        return count
+    
     def get_devices(self):
         """
         List all devices known to the router
@@ -77,7 +99,7 @@ class HG659Client:
 
     @password.setter
     def password(self, value):
-        self._password = util.base64(util.sha256(value))
+        self._password = base64(sha256(value))
 
     def _request(self, method, path, **kwargs):
         url = f"http://{self.host}/{path.lstrip('/')}"
@@ -127,7 +149,7 @@ class HG659Client:
         return json.loads(match.group(1))
 
     def _encode_password(self):
-        return util.sha256(
+        return sha256(
             self.username + self.password + self._csrf_param + self._csrf_token
         )
 
