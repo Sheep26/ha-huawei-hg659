@@ -2,6 +2,8 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.data_entry_flow import FlowResult
+from urllib3.exceptions import MaxRetryError
+from requests.exceptions import ConnectTimeout
 
 from .const import DOMAIN
 
@@ -16,20 +18,22 @@ class HuaweiHG659ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Optional: Add validation logic here
-            # e.g., test connection to HG659 with user_input[CONF_HOST], etc.
-            # For now, assume it's valid and continue.
-            client = HG659Client(user_input[CONF_HOST], user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
-            
-            login_data = client.login()
-            
-            if login_data["errorCategory"] == "ok":
-                return self.async_create_entry(
-                    title=f"HG659 @ {user_input[CONF_HOST]}",
-                    data=user_input
-                )
-            else:
-                errors["_base"] = "Login error."
+            try:
+                client = HG659Client(user_input[CONF_HOST], user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+                
+                login_data = client.login()
+                
+                if login_data["errorCategory"] == "ok":
+                    return self.async_create_entry(
+                        title=f"HG659 @ {user_input[CONF_HOST]}",
+                        data=user_input
+                    )
+                else:
+                    errors[CONF_PASSWORD] = "Invalid username or password"
+            except (TimeoutError, MaxRetryError, ConnectTimeout):
+                errors[CONF_HOST] = "Invalid host."
+            except Exception:
+                errors["_base"] = "Unknown error."
 
         return self.async_show_form(
             step_id="user",
