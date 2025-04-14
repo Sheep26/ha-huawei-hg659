@@ -5,6 +5,8 @@ from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
 
+from .client import HG659Client
+
 class HuaweiHG659ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
@@ -17,11 +19,17 @@ class HuaweiHG659ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # Optional: Add validation logic here
             # e.g., test connection to HG659 with user_input[CONF_HOST], etc.
             # For now, assume it's valid and continue.
-
-            return self.async_create_entry(
-                title=f"HG659 @ {user_input[CONF_HOST]}",
-                data=user_input
-            )
+            client = HG659Client(user_input[CONF_HOST], user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+            
+            login_data = client.login()
+            
+            if login_data["errorCategory"] == "ok":
+                return self.async_create_entry(
+                    title=f"HG659 @ {user_input[CONF_HOST]}",
+                    data=user_input
+                )
+            else:
+                errors["_base"] = "Login error."
 
         return self.async_show_form(
             step_id="user",

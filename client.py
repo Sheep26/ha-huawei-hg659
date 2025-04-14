@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import hashlib
 import base64 as b64
 
-from homeassistant.helpers.device_registry import format_mac
+#from homeassistant.helpers.device_registry import format_mac
 
 _WHITESPACE_RX = re.compile(r"\s")
 
@@ -60,7 +60,7 @@ class HG659Client:
         output = self._extract_json(response.text)
 
         assert output, f"Error logging in. Response content: {response.text}"
-        return self._extract_json(response.text)
+        return output
 
     def logout(self):
         """
