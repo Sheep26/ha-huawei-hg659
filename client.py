@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import hashlib
 import base64 as b64
 
+from homeassistant.helpers.device_registry import format_mac
+
 _WHITESPACE_RX = re.compile(r"\s")
 
 def base64(s):
@@ -71,15 +73,21 @@ class HG659Client:
         return response.status_code
 
     def get_connected_devices(self) -> int:
-        devices = self.get_devices()
-        
-        count = 0
-        
-        for device in devices:
-            if device["Active"]:
-                count += 1
-        
-        return count
+        return sum(1 for d in self.get_devices() if d["Active"])
+    
+    def get_active_devices(self):
+        return [
+            dict(
+                id=format_mac(d["MACAddress"]),
+                source_type="router",
+                is_connected=d["Active"],
+                ip_address=d["IPAddress"],
+                mac_address=d["MACAddress"],
+                hostname=d["HostName"],
+            )
+            for d in self.get_devices()
+            if d["Active"]
+        ]
     
     def get_devices(self):
         """

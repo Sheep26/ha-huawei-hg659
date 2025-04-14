@@ -1,15 +1,17 @@
 # HG659 home assistant integration.
 import logging
 from typing import Final
+from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD, DOMAIN
 
 from client import HG659Client
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "huawei_hg659"
+DOMAIN = DOMAIN
+client: HG659Client
 
-async def async_setup(hass, config):
-    #hass.states.async_set("hello_state.world", "Paulus")
+async def async_create_entry(hass, config):
+    
     
     # Setup component.
     return True
