@@ -95,7 +95,6 @@ class HG659Client:
         return output
     
     def get_wan_st(self):
-        # /api/ntwk/wan_st
         response = self._get("/api/ntwk/wan_st", json=self._auth_data())
         output = self._extract_json(response.text)
         
