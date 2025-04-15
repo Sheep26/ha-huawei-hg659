@@ -74,8 +74,6 @@ class HG659ExternalIPAddr(SensorEntity):
         self._attr_name = "HG659 External IP Address"
         self._attr_unique_id = "hg659_external_ip_addr"
         self._attr_native_value = None
-        self._attr_device_class = None
-        self._attr_state_class = "measurement"
     
     def update(self):
         """Fetch new state data from the router."""

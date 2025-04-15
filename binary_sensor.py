@@ -30,3 +30,7 @@ class HG659OnlineSensor(BinarySensorEntity):
             self._attr_is_on = self._client.get_connected()
         except Exception as e:
             _LOGGER.warning(f"Failed to update HG659 online sensor: {e}")
+    
+    @property
+    def available(self):
+        return self._attr_is_on is not None
