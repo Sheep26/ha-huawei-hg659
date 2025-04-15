@@ -94,6 +94,19 @@ class HG659Client:
         
         return output
     
+    def get_wan_st(self):
+        # /api/ntwk/wan_st
+        response = self._get("/api/system/diagnose_internet", json=self._auth_data())
+        output = self._extract_json(response.text)
+        
+        return output
+    
+    def get_connected(self):
+        return self.get_wan_st()["ConnectionStatus"]
+    
+    def get_external_ip_addr(self):
+        return self.get_wan_st()["ExternalIPAddress"]
+    
     def get_active_devices(self):
         return [
             d
