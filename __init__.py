@@ -4,6 +4,8 @@ from typing import Final
 from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD, Platform
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+
 from urllib3.exceptions import MaxRetryError
 from requests.exceptions import ConnectTimeout
 
@@ -17,6 +19,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     _LOGGER.info("Hello world from Huawei HG659.")
+    
     try:
         # Create client with config data. Store it in home assistant data.
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = await hass.async_add_executor_job(lambda: HG659Client(entry.data[CONF_HOST], entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD]))
@@ -26,20 +29,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         
         # Check if login successful.
         if not login_data["errorCategory"] == "ok":
-            _LOGGER.error("Login error.")
             hass.data[DOMAIN][entry.entry_id] = None
-            return False
+            raise ConfigEntryAuthFailed(f"Invalid username or password.")
     except (TimeoutError, MaxRetryError, ConnectTimeout):
         # Invalid host.
         _LOGGER.error("Invalid host.")
         hass.data[DOMAIN][entry.entry_id] = None
-        return False
+        raise ConfigEntryNotReady(f"Timeout while connecting to {entry.data[CONF_HOST]}")
     except Exception as e:
         # Something messed up.
         _LOGGER.error("Unknown error.")
         _LOGGER.error(e)
         hass.data[DOMAIN][entry.entry_id] = None
-        return False
+        raise ConfigEntryNotReady(f"Timeout while connecting to {entry.data[CONF_HOST]}")
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     
