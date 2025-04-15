@@ -57,7 +57,6 @@ class HG659Client:
         response = self._post("/api/system/user_login", json=data)
         output = self._extract_json(response.text)
 
-        assert output, f"Error logging in. Response content: {response.text}"
         return output
 
     def logout(self):
@@ -74,12 +73,23 @@ class HG659Client:
         response = self._get("/api/system/device_count")
         output = self._extract_json(response.text)
         
-        assert output, f"Error getting devices. Response content: {response.text}"
         return int(output["ActiveDeviceNumbers"])
         #return sum(1 for d in self.get_devices() if d["Active"])
     
     def get_device_info(self):
         response = self._get("/api/system/deviceinfo")
+        output = self._extract_json(response.text)
+        
+        return output
+    
+    def get_wizard_wifi(self):
+        response = self._get("/api/system/wizard_wifi")
+        output = self._extract_json(response.text)
+        
+        return output
+    
+    def get_diagnose_internet(self):
+        response = self._get("/api/system/diagnose_internet")
         output = self._extract_json(response.text)
         
         return output
@@ -99,8 +109,6 @@ class HG659Client:
         """
         response = self._get("/api/system/HostInfo")
         output = self._extract_json(response.text)
-
-        assert output, f"Error getting devices. Response content: {response.text}"
         return output
     
     def get_uptime(self):
