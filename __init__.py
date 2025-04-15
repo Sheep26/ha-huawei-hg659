@@ -13,8 +13,6 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: Final = [Platform.WEATHER, Platform.SENSOR]
-
 async def async_create_entry(hass: HomeAssistant, entry: ConfigEntry):
     try:
         # Create client with config data.
