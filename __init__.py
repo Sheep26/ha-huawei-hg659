@@ -16,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    _LOGGER.info("Hello world from HG659.")
+    _LOGGER.info("Hello world from Huawei HG659.")
     try:
         # Create client with config data. Store it in home assistant data.
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = await hass.async_add_executor_job(lambda: HG659Client(entry.data[CONF_HOST], entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD]))

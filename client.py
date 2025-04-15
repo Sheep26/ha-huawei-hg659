@@ -187,5 +187,6 @@ class HG659Client:
     def __del__(self):
         try:
             self.logout()
+            self._session.close()
         except Exception as e:
             pass
