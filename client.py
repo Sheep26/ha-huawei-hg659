@@ -82,13 +82,13 @@ class HG659Client:
         
         return output
     
-    def get_wizard_wifi(self):
+    def get_wifi_info(self):
         response = self._get("/api/system/wizard_wifi")
         output = self._extract_json(response.text)
         
         return output
     
-    def get_diagnose_internet(self):
+    def get_network_info(self):
         response = self._get("/api/system/diagnose_internet")
         output = self._extract_json(response.text)
         
@@ -96,16 +96,16 @@ class HG659Client:
     
     def get_wan_st(self):
         # /api/ntwk/wan_st
-        response = self._get("/api/system/diagnose_internet", json=self._auth_data())
+        response = self._get("/api/ntwk/wan_st", json=self._auth_data())
         output = self._extract_json(response.text)
         
         return output
     
     def get_connected(self):
-        return self.get_wan_st()["ConnectionStatus"]
+        return self.get_network_info()["ConnectionStatus"]
     
     def get_external_ip_addr(self):
-        return self.get_wan_st()["ExternalIPAddress"]
+        return self.get_network_info()["ExternalIPAddress"]
     
     def get_active_devices(self):
         return [
