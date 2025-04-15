@@ -80,6 +80,9 @@ class HG659Client:
     
     def get_device_info(self):
         response = self._get("/api/system/deviceinfo")
+        output = self._extract_json(response.text)
+        
+        return output
     
     def get_active_devices(self):
         return [
@@ -102,8 +105,7 @@ class HG659Client:
     
     def get_uptime(self):
         # Get uptime.
-        
-        response = self._get("")
+        return self.get_device_info()["UpTime"]
 
     @property
     def password(self):
