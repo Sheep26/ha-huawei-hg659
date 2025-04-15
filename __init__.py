@@ -6,9 +6,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from urllib3.exceptions import MaxRetryError
 from requests.exceptions import ConnectTimeout
-from __future__ import annotations
-
-from collections.abc import Callable
 
 from .client import HG659Client
 

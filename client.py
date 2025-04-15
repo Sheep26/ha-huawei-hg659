@@ -180,7 +180,5 @@ class HG659Client:
     def __del__(self):
         try:
             self.logout()
-        except requests.exceptions.HTTPError as e:
-            if str(e).startswith("404"):
-                # Weren't logged in, no worries
-                pass
+        except Exception as e:
+            pass

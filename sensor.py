@@ -1,5 +1,4 @@
 from homeassistant.helpers.entity import Entity
-from homeassistant.const import DEVICE_CLASS_TIMESTAMP
 from .const import DOMAIN
 
 import logging
