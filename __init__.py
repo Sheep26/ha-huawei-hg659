@@ -21,6 +21,7 @@ async def async_create_entry(hass: HomeAssistant, entry: ConfigEntry):
         # Attempt to login.
         login_data = _CLIENT.login()
         
+        # Check if login successful.
         if not login_data["errorCategory"] == "ok":
             _LOGGER.error("Huawei HG659, Login error.")
             return False
