@@ -1,5 +1,6 @@
 from homeassistant.helpers.entity import Entity
 from .const import DOMAIN
+from datetime import timedelta
 
 import logging
 _LOGGER = logging.getLogger(__name__)
@@ -27,4 +28,6 @@ class HG659UptimeSensor(Entity):
 
     @property
     def state(self):
-        return self._state
+        if self._state is None:
+            return None
+        return str(timedelta(seconds=self._state))

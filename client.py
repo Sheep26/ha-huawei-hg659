@@ -120,7 +120,6 @@ class HG659Client:
         kwargs.setdefault("timeout", 2)
 
         response = self._session.request(method, url, **kwargs,)
-        response.raise_for_status()
 
         param, token = self._extract_csrf(response.text)
         if param and token:

@@ -15,27 +15,29 @@ _LOGGER = logging.getLogger(__name__)
 #Platform.BINARY_SENSOR, 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
-async def async_create_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    _LOGGER.info("Hello world from HG659.")
     try:
-        # Create client with config data.
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HG659Client(entry.data[CONF_HOST], entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
+        # Create client with config data. Store it in home assistant data.
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = await hass.async_add_executor_job(lambda: HG659Client(entry.data[CONF_HOST], entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD]))
         
         # Attempt to login.
-        login_data = hass.data[DOMAIN][entry.entry_id].login()
+        login_data = await hass.async_add_executor_job(hass.data[DOMAIN][entry.entry_id].login)
         
         # Check if login successful.
         if not login_data["errorCategory"] == "ok":
-            _LOGGER.error("Huawei HG659, Login error.")
+            _LOGGER.error("Login error.")
             hass.data[DOMAIN][entry.entry_id] = None
             return False
     except (TimeoutError, MaxRetryError, ConnectTimeout):
         # Invalid host.
-        _LOGGER.error("Huawei HG659, Invalid host.")
+        _LOGGER.error("Invalid host.")
         hass.data[DOMAIN][entry.entry_id] = None
         return False
-    except Exception:
+    except Exception as e:
         # Something messed up.
-        _LOGGER.error("Huawei HG659, Unknown error.")
+        _LOGGER.error("Unknown error.")
+        _LOGGER.error(e)
         hass.data[DOMAIN][entry.entry_id] = None
         return False
     
