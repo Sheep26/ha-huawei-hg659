@@ -87,4 +87,4 @@ class HG659ExternalIPAddr(SensorEntity):
     
     @property
     def available(self):
-        return self._state is not None
+        return self._attr_native_value is not None

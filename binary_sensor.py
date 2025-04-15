@@ -24,9 +24,9 @@ class HG659OnlineSensor(BinarySensorEntity):
         self._attr_device_class = "connectivity"
         self._attr_is_on = None
 
-    async def async_update(self):
+    def update(self):
         """Fetch new state data from the router asynchronously."""
         try:
-            self._attr_is_on = await self._client.get_connected()
+            self._attr_is_on = self._client.get_connected()
         except Exception as e:
             _LOGGER.warning(f"Failed to update HG659 online sensor: {e}")
