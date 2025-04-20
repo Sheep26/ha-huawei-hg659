@@ -14,7 +14,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities = [
         HG659UptimeSensor(client),
         HG659DeivceCountSensor(client),
-        HG659ExternalIPAddr(client)
+        HG659ExternalIPAddrSensor(client)
     ]
     
     async_add_entities(entities)
@@ -84,7 +84,7 @@ class HG659DeivceCountSensor(SensorEntity):
                 "Hostname": d["HostName"],
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
-                "Connection Time": timedelta(int(d["LeaseTime"])),
+                "Connection Time": str(timedelta(seconds=int(d["LeaseTime"]))),
             } for d in self._active_devices] if not self._active_devices == None else "None"
         }
 
@@ -92,7 +92,7 @@ class HG659DeivceCountSensor(SensorEntity):
     def available(self):
         return self.native_value is not None
 
-class HG659ExternalIPAddr(SensorEntity):
+class HG659ExternalIPAddrSensor(SensorEntity):
     def __init__(self, client):
         self._client = client
         self._attr_name = "HG659 External IP Address"
