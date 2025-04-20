@@ -41,7 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady(f"Timeout while connecting to {entry.data[CONF_HOST]}")
     
     config = HG659UpdateCoordinatorConfig(
-        client=hass.data[DOMAIN][entry.entry_id]
+        client=client
     )
     
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HG659UpdateCoordinator(hass, config)
