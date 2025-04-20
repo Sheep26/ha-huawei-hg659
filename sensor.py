@@ -18,7 +18,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Add entities
     entities = [
         HG659UptimeSensor(coordinator),
-        HG659DeivceCountSensor(coordinator),
+        HG659DeviceCountSensor(coordinator),
         HG659ExternalIPAddrSensor(coordinator),
         HG659Sensor(coordinator, host)
     ]
@@ -34,14 +34,13 @@ class HG659UptimeSensor(CoordinatorEntity, SensorEntity):
         self._attr_suggested_unit_of_measurement = "d"
         self._attr_device_class = "duration"
         self._attr_state_class = "measurement"
-        self.coordinator_data = {}
         
         # Init coordinator.
         super().__init__(coordinator)
     
     @property
     def native_value(self):
-        return self.coordinator_data.setdefault("uptime", None)
+        return self.coordinator.data.get("uptime")
     
     #@property
     #def state(self):
@@ -54,10 +53,9 @@ class HG659UptimeSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self):
         """Handle updated data from the coordinator."""
-        self.coordinator_data = self.coordinator.data[self.idx]
         self.async_write_ha_state()
 
-class HG659DeivceCountSensor(CoordinatorEntity, SensorEntity):
+class HG659DeviceCountSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: HG659UpdateCoordinator):
         self._attr_name = "HG659 Device count"
         self._attr_unique_id = "hg659_device_count"
@@ -71,7 +69,7 @@ class HG659DeivceCountSensor(CoordinatorEntity, SensorEntity):
     
     @property
     def native_value(self):
-        return self.coordinator_data.setdefault("device_count", None)
+        return self.coordinator.data.get("device_count")
     
     @property
     def extra_state_attributes(self):
@@ -81,7 +79,7 @@ class HG659DeivceCountSensor(CoordinatorEntity, SensorEntity):
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
                 "Connection Time": str(timedelta(seconds=int(d["LeaseTime"]))),
-            } for d in self.coordinator_data.setdefault("devices", [])]
+            } for d in self.coordinator.data.get("devices")]
         }
 
     @property
@@ -91,21 +89,19 @@ class HG659DeivceCountSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self):
         """Handle updated data from the coordinator."""
-        self.coordinator_data = self.coordinator.data[self.idx]
         self.async_write_ha_state()
 
 class HG659ExternalIPAddrSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: HG659UpdateCoordinator):
         self._attr_name = "HG659 External IP Address"
         self._attr_unique_id = f"hg659_external_ip_addr"
-        self.coordinator_data = {}
         
         # Init coordinator.
         super().__init__(coordinator)
     
     @property
     def native_value(self):
-        return self.coordinator_data.setdefault("external_ip", None)
+        return self.coordinator.data.get("external_ip")
     
     @property
     def available(self):
@@ -114,7 +110,6 @@ class HG659ExternalIPAddrSensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self):
         """Handle updated data from the coordinator."""
-        self.coordinator_data = self.coordinator.data[self.idx]
         self.async_write_ha_state()
 
 class HG659Sensor(CoordinatorEntity, SensorEntity):
@@ -130,13 +125,13 @@ class HG659Sensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         return {
-            "Serial number": self.coordinator_data.setdefault("serial_number", None),
-            "Software version": self.coordinator_data.setdefault("software_version", None),
-            "MAC Address": self.coordinator_data.setdefault("mac_addr", None),
-            "DNS servers": self.coordinator_data.setdefault("dns_servers", None),
-            "External IP": self.coordinator_data.setdefault("external_ip", None),
-            "Uptime": self.coordinator_data.setdefault("uptime", None)
-        } if not self.coordinator_data == None else {}
+            "Serial number": self.coordinator.data.get("serial_number"),
+            "Software version": self.coordinator.data.get("software_version"),
+            "MAC Address": self.coordinator.data.get("mac_addr"),
+            "DNS servers": self.coordinator.data.get("dns_servers"),
+            "External IP": self.coordinator.data.get("external_ip"),
+            "Uptime": self.coordinator.data.get("uptime")
+        }
     
     @property
     def native_value(self):
@@ -149,5 +144,4 @@ class HG659Sensor(CoordinatorEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self):
         """Handle updated data from the coordinator."""
-        self.coordinator_data = self.coordinator.data[self.idx]
         self.async_write_ha_state()
