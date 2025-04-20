@@ -85,7 +85,7 @@ class HG659DeivceCountSensor(SensorEntity):
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
                 "Connection Time": timedelta(int(d["LeaseTime"])),
-            } for d in self._active_devices] if not self._active_devices == None else []
+            } for d in self._active_devices] if not self._active_devices == None else "None"
         }
 
     @property
