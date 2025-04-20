@@ -1,8 +1,8 @@
 # 📶  huawei-hg659
-Home Assistant integration for the Huawei HG659 router
+Huawei HG659 router Home Assistant integration.
 
 ## 🔌  Installation
-To enable integration in Home Assistant, clone this repo in your installation's `custom_components` directory as `hg659`:
+To install integration in Home Assistant, clone this repo in your installation's `custom_components` directory as `hg659`:
 
 ```console
 $ git clone https://github.com/Sheep26/huawei-hg659.git custom_components/hg659
