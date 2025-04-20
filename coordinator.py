@@ -50,17 +50,23 @@ class HG659UpdateCoordinator(DataUpdateCoordinator):
         return self._client
     
     async def _async_update_data(self) -> dict:
-        device_info = self._hass.async_add_executor_job(self.client.get_device_info)
-        diagnose_internet = self._hass.async_add_executor_job(self.client.get_diagnose_internet)
-        return {
-            "host": self.client.host,
-            "connected": True if diagnose_internet["ConnectionStatus"] == "Connected" else False,
-            "serial_number": device_info["SerialNumber"],
-            "software_version": device_info["SoftwareVersion"],
-            "mac_addr": diagnose_internet["MACAddress"],
-            "uptime": device_info["UpTime"],
-            "device_count": self._hass.async_add_executor_job(self.client.get_device_count),
-            "devices": self._hass.async_add_executor_job(self.client.get_active_devices),
-            "external_ip": diagnose_internet["ExternalIPAddress"],
-            "dns_servers": diagnose_internet["DNSServers"],
-        }
+        try:
+            device_info = await self._hass.async_add_executor_job(self.client.get_device_info)
+            diagnose_internet = await self._hass.async_add_executor_job(self.client.get_diagnose_internet)
+            device_count = await self._hass.async_add_executor_job(self.client.get_device_count)
+            devices = await self._hass.async_add_executor_job(self.client.get_active_devices)
+            return {
+                "host": self.client.host,
+                "connected": True if diagnose_internet["ConnectionStatus"] == "Connected" else False,
+                "serial_number": device_info["SerialNumber"],
+                "software_version": device_info["SoftwareVersion"],
+                "mac_addr": diagnose_internet["MACAddress"],
+                "uptime": device_info["UpTime"],
+                "device_count": device_count,
+                "devices": devices,
+                "external_ip": diagnose_internet["ExternalIPAddress"],
+                "dns_servers": diagnose_internet["DNSServers"],
+            }
+        except Exception as err:
+            _LOGGER.error("Error updating HG659 data: %s", err)
+            raise UpdateFailed(f"Error communicating with HG659 device: {err}")
