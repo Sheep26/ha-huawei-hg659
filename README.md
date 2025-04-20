@@ -1,8 +1,6 @@
 # 📶  huawei-hg659
 Home Assistant presence detection for the Huawei HG659 router
 
-**Maintenance Note:** I no longer have my trusty HG659, so I don't have any way of testing changes. Use at your own risk!
-
 ## 🔌  Installation
 To enable presence detection in Home Assistant, clone this repo in your installation's `custom_components` directory as `hg659`:
 
