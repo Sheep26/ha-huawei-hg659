@@ -1,4 +1,6 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.core import callback
 
 from .const import DOMAIN
 from .coordinator import HG659UpdateCoordinator
@@ -17,21 +19,22 @@ async def async_setup_entry(hass, entry, async_add_entities):
     
     async_add_entities(entities)
 
-class HG659OnlineSensor(BinarySensorEntity):
+class HG659OnlineSensor(CoordinatorEntity, BinarySensorEntity):
     def __init__(self, coordinator: HG659UpdateCoordinator):
-        self._coordinator = coordinator
         self._attr_name = "HG659 Connected"
         self._attr_unique_id = "hg659_connected"
         self._attr_device_class = "connectivity"
         self._attr_is_on = None
-
-    def update(self):
-        """Fetch new state data from the router asynchronously."""
-        try:
-            self._attr_is_on = self._coordinator.data["connected"]
-        except Exception as e:
-            _LOGGER.warning(f"Failed to update HG659 online sensor: {e}")
+        
+        # Init coordinator.
+        super().__init__(coordinator)
     
     @property
     def available(self):
         return self._attr_is_on is not None
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_is_on = self.coordinator.data[self.idx]["connected"]
+        self.async_write_ha_state()
