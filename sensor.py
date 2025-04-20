@@ -15,7 +15,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities = [
         HG659UptimeSensor(coordinator),
         HG659DeivceCountSensor(coordinator),
-        HG659ExternalIPAddrSensor(coordinator)
+        HG659ExternalIPAddrSensor(coordinator),
+        HG659Sensor(coordinator)
     ]
     
     async_add_entities(entities)
@@ -30,20 +31,10 @@ class HG659UptimeSensor(SensorEntity):
         self._attr_suggested_unit_of_measurement = "d"
         self._attr_device_class = "duration"
         self._attr_state_class = "measurement"
-        self._uptime = None
-
-    def update(self):
-        """Fetch new state data from the router."""
-        try:
-            self._uptime = self._coordinator.data["uptime"]
-            #self._state = self._client.get_uptime()
-        except Exception as e:
-            _LOGGER.warning(f"Failed to update uptime sensor: {e}")
-            self._uptime = None
     
     @property
     def native_value(self):
-        return self._uptime
+        return self._coordinator.data["uptime"]
     
     #@property
     #def state(self):
@@ -61,22 +52,10 @@ class HG659DeivceCountSensor(SensorEntity):
         #self._attr_native_value = None
         self._attr_device_class = None
         self._attr_state_class = "measurement"
-        self._active_devices = None
-        self._device_count = None
-
-    def update(self):
-        """Fetch new state data from the router."""
-        try:
-            self._device_count = self._client.get_device_count()
-            self._active_devices = self._client.get_active_devices()
-        except Exception as e:
-            _LOGGER.warning(f"Failed to update device count sensor: {e}")
-            self._device_count = None
-            self._active_devices = None
     
     @property
     def native_value(self):
-        return self._device_count
+        return self._coordinator.data["device_count"]
     
     @property
     def extra_state_attributes(self):
@@ -86,7 +65,7 @@ class HG659DeivceCountSensor(SensorEntity):
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
                 "Connection Time": str(timedelta(seconds=int(d["LeaseTime"]))),
-            } for d in self._active_devices]
+            } for d in self._coordinator.data["devices"]]
         }
 
     @property
@@ -98,19 +77,10 @@ class HG659ExternalIPAddrSensor(SensorEntity):
         self._coordinator = coordinator
         self._attr_name = "HG659 External IP Address"
         self._attr_unique_id = f"hg659_external_ip_addr"
-        self._external_ip = None
-    
-    def update(self):
-        """Fetch new state data from the router."""
-        try:
-            self._external_ip = self._client.get_external_ip_addr()
-        except Exception as e:
-            _LOGGER.warning(f"Failed to update device count sensor: {e}")
-            self._external_ip = None
     
     @property
     def native_value(self):
-        return self._external_ip
+        return self._coordinator.data["external_ip"]
     
     @property
     def available(self):
@@ -119,17 +89,20 @@ class HG659ExternalIPAddrSensor(SensorEntity):
 class HG659Sensor(SensorEntity):
     def __init__(self, coordinator: HG659UpdateCoordinator):
         self._coordinator = coordinator
-        self._attr_name = f"HG659 @ {coordinator.host}"
-        self._attr_unique_id = f"hg659"
-        self._serial_number = None
-        self._mac_addr = None
-        self._software_version = None
-        self._dns_servers = None
+        self._attr_name = f"HG659 @ {coordinator.data["host"]}"
+        self._attr_unique_id = f"hg659_{coordinator.data["host"]}"
     
     @property
     def extra_state_attributes(self):
-        pass
+        return {
+            "Serial number": self._coordinator.data["serial_number"],
+            "Software version": self._coordinator.data["software_version"],
+            "MAC Address": self._coordinator.data["mac_addr"],
+            "DNS servers": self._coordinator.data["dns_servers"],
+            "External IP": self._coordinator.data["external_ip"],
+            "Uptime": self._coordinator.data["uptime"]
+        }
     
     @property
     def native_value(self):
-        return self.coordinator.host
+        return self._coordinator.data["host"]

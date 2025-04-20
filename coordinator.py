@@ -57,6 +57,7 @@ class HG659UpdateCoordinator(DataUpdateCoordinator):
             "connected": True if diagnose_internet["ConnectionStatus"] == "Connected" else False,
             "serial_number": device_info["SerialNumber"],
             "software_version": device_info["SoftwareVersion"],
+            "mac_addr": diagnose_internet["MACAddress"],
             "uptime": device_info["UpTime"],
             "device_count": self._hass.async_add_executor_job(self.client.get_device_count),
             "devices": self._hass.async_add_executor_job(self.client.get_active_devices),
