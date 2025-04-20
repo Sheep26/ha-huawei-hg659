@@ -1,4 +1,5 @@
 from homeassistant.components.sensor import SensorEntity
+from datetime import timedelta
 
 from .const import DOMAIN
 
@@ -79,7 +80,12 @@ class HG659DeivceCountSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return {
-            "Devices": [d for d in self._active_devices] if not self._active_devices == None else []
+            "Devices": [{
+                "Hostname": d["HostName"],
+                "IP Address": d["IPAddress"],
+                "MAC Address": d["MACAddress"],
+                "Connection Time": timedelta(int(d["LeaseTime"])),
+            } for d in self._active_devices] if not self._active_devices == None else []
         }
 
     @property
