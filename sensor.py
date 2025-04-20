@@ -40,7 +40,7 @@ class HG659UptimeSensor(CoordinatorEntity, SensorEntity):
     
     @property
     def native_value(self):
-        return self.coordinator.data.get("uptime") if not self.coordinator.data == None else None
+        return self.coordinator.data["uptime"] if not self.coordinator.data == None else None
     
     #@property
     #def state(self):
@@ -69,7 +69,7 @@ class HG659DeviceCountSensor(CoordinatorEntity, SensorEntity):
     
     @property
     def native_value(self):
-        return self.coordinator.data.get("device_count") if not self.coordinator.data == None else None
+        return self.coordinator.data["device_count"] if not self.coordinator.data == None else None
     
     @property
     def extra_state_attributes(self):
@@ -79,7 +79,7 @@ class HG659DeviceCountSensor(CoordinatorEntity, SensorEntity):
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
                 "Connection Time": str(timedelta(seconds=int(d["LeaseTime"]))),
-            } for d in self.coordinator.data.get("devices")] if not self.coordinator.data == None else None
+            } for d in self.coordinator.data["devices"]] if not self.coordinator.data == None else None
         }
 
     @property
@@ -101,7 +101,7 @@ class HG659ExternalIPAddrSensor(CoordinatorEntity, SensorEntity):
     
     @property
     def native_value(self):
-        return self.coordinator.data.get("external_ip") if not self.coordinator.data == None else None
+        return self.coordinator.data["external_ip"] if not self.coordinator.data == None else None
     
     @property
     def available(self):
@@ -125,12 +125,12 @@ class HG659Sensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         return {
-            "Serial number": self.coordinator.data.get("serial_number") if not self.coordinator.data == None else None,
-            "Software version": self.coordinator.data.get("software_version") if not self.coordinator.data == None else None,
-            "MAC Address": self.coordinator.data.get("mac_addr") if not self.coordinator.data == None else None,
-            "DNS servers": self.coordinator.data.get("dns_servers") if not self.coordinator.data == None else None,
-            "External IP": self.coordinator.data.get("external_ip") if not self.coordinator.data == None else None,
-            "Uptime": self.coordinator.data.get("uptime") if not self.coordinator.data == None else None
+            "Serial number": self.coordinator.data["serial_number"] if not self.coordinator.data == None else None,
+            "Software version": self.coordinator.data["software_version"] if not self.coordinator.data == None else None,
+            "MAC Address": self.coordinator.data["mac_addr"] if not self.coordinator.data == None else None,
+            "DNS servers": self.coordinator.data["dns_servers"] if not self.coordinator.data == None else None,
+            "External IP": self.coordinator.data["external_ip"] if not self.coordinator.data == None else None,
+            "Uptime": self.coordinator.data["uptime"] if not self.coordinator.data == None else None
         }
     
     @property
