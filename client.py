@@ -88,7 +88,7 @@ class HG659Client:
         
         return output
     
-    def get_network_info(self):
+    def get_diagnose_internet(self):
         response = self._get("/api/system/diagnose_internet")
         output = self._extract_json(response.text)
         
@@ -101,10 +101,10 @@ class HG659Client:
         return output
     
     def get_connected(self):
-        return self.get_network_info()["ConnectionStatus"]
+        return self.get_diagnose_internet()["ConnectionStatus"]
     
     def get_external_ip_addr(self):
-        return self.get_network_info()["ExternalIPAddress"]
+        return self.get_diagnose_internet()["ExternalIPAddress"]
     
     def get_active_devices(self):
         return [
@@ -126,6 +126,9 @@ class HG659Client:
     def get_uptime(self):
         # Get uptime.
         return int(self.get_device_info()["UpTime"])
+    
+    def reboot(self):
+        self._post("/api/service/reboot.cgi", json=self._auth_data())
 
     @property
     def password(self):

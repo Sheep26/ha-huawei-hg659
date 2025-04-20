@@ -2,26 +2,27 @@ from homeassistant.components.sensor import SensorEntity
 from datetime import timedelta
 
 from .const import DOMAIN
+from .coordinator import HG659UpdateCoordinator
 
 import logging
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    client = hass.data[DOMAIN][entry.entry_id]
+    coordinator: HG659UpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
 
     # Add entities
     entities = [
-        HG659UptimeSensor(client),
-        HG659DeivceCountSensor(client),
-        HG659ExternalIPAddrSensor(client)
+        HG659UptimeSensor(coordinator),
+        HG659DeivceCountSensor(coordinator),
+        HG659ExternalIPAddrSensor(coordinator)
     ]
     
     async_add_entities(entities)
 
 class HG659UptimeSensor(SensorEntity):
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, coordinator: HG659UpdateCoordinator):
+        self._coordinator = coordinator
         self._attr_name = "HG659 Uptime"
         self._attr_unique_id = "hg659_uptime"
         #self._state = None
@@ -34,7 +35,7 @@ class HG659UptimeSensor(SensorEntity):
     def update(self):
         """Fetch new state data from the router."""
         try:
-            self._uptime = self._client.get_uptime()
+            self._uptime = self._coordinator.data["uptime"]
             #self._state = self._client.get_uptime()
         except Exception as e:
             _LOGGER.warning(f"Failed to update uptime sensor: {e}")
@@ -53,8 +54,8 @@ class HG659UptimeSensor(SensorEntity):
         return self.native_value is not None
 
 class HG659DeivceCountSensor(SensorEntity):
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, coordinator: HG659UpdateCoordinator):
+        self._coordinator = coordinator
         self._attr_name = "HG659 Device count"
         self._attr_unique_id = "hg659_device_count"
         #self._attr_native_value = None
@@ -85,7 +86,7 @@ class HG659DeivceCountSensor(SensorEntity):
                 "IP Address": d["IPAddress"],
                 "MAC Address": d["MACAddress"],
                 "Connection Time": str(timedelta(seconds=int(d["LeaseTime"]))),
-            } for d in self._active_devices] if not self._active_devices == None else "None"
+            } for d in self._active_devices]
         }
 
     @property
@@ -93,10 +94,10 @@ class HG659DeivceCountSensor(SensorEntity):
         return self.native_value is not None
 
 class HG659ExternalIPAddrSensor(SensorEntity):
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, coordinator: HG659UpdateCoordinator):
+        self._coordinator = coordinator
         self._attr_name = "HG659 External IP Address"
-        self._attr_unique_id = "hg659_external_ip_addr"
+        self._attr_unique_id = f"hg659_external_ip_addr"
         self._external_ip = None
     
     def update(self):
@@ -114,3 +115,21 @@ class HG659ExternalIPAddrSensor(SensorEntity):
     @property
     def available(self):
         return self.native_value is not None
+
+class HG659Sensor(SensorEntity):
+    def __init__(self, coordinator: HG659UpdateCoordinator):
+        self._coordinator = coordinator
+        self._attr_name = f"HG659 @ {coordinator.host}"
+        self._attr_unique_id = f"hg659"
+        self._serial_number = None
+        self._mac_addr = None
+        self._software_version = None
+        self._dns_servers = None
+    
+    @property
+    def extra_state_attributes(self):
+        pass
+    
+    @property
+    def native_value(self):
+        return self.coordinator.host
