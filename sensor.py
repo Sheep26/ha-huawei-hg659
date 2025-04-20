@@ -28,61 +28,83 @@ class HG659UptimeSensor(SensorEntity):
         self._attr_suggested_unit_of_measurement = "d"
         self._attr_device_class = "duration"
         self._attr_state_class = "measurement"
-        self._attr_native_value = None
+        self._uptime = None
 
     def update(self):
         """Fetch new state data from the router."""
         try:
-            self._attr_native_value = self._client.get_uptime()
+            self._uptime = self._client.get_uptime()
             #self._state = self._client.get_uptime()
         except Exception as e:
             _LOGGER.warning(f"Failed to update uptime sensor: {e}")
-            self._attr_native_value = None
-
+            self._uptime = None
+    
+    @property
+    def native_value(self):
+        return self._uptime
+    
     #@property
     #def state(self):
         #return self._state
     
     @property
     def available(self):
-        return self._attr_native_value is not None
+        return self.native_value is not None
 
 class HG659DeivceCountSensor(SensorEntity):
     def __init__(self, client):
         self._client = client
         self._attr_name = "HG659 Device count"
         self._attr_unique_id = "hg659_device_count"
-        self._attr_native_value = None
+        #self._attr_native_value = None
         self._attr_device_class = None
         self._attr_state_class = "measurement"
+        self._active_devices = None
+        self._device_count = None
 
     def update(self):
         """Fetch new state data from the router."""
         try:
-            self._attr_native_value = self._client.get_device_count()
+            self._device_count = self._client.get_device_count()
+            self._active_devices = self._client.get_active_devices()
         except Exception as e:
             _LOGGER.warning(f"Failed to update device count sensor: {e}")
-            self._attr_native_value = None
+            self._device_count = None
+            self._active_devices = None
+    
+    @property
+    def native_value(self):
+        return self._device_count
+    
+    @property
+    def extra_state_attributes(self):
+        return {
+            "Devices": [d for d in self._active_devices] if not self._active_devices == None else []
+        }
 
     @property
     def available(self):
-        return self._attr_native_value is not None
+        return self.native_value is not None
 
 class HG659ExternalIPAddr(SensorEntity):
     def __init__(self, client):
         self._client = client
         self._attr_name = "HG659 External IP Address"
         self._attr_unique_id = "hg659_external_ip_addr"
-        self._attr_native_value = None
+        self._external_ip = None
     
     def update(self):
         """Fetch new state data from the router."""
         try:
-            self._attr_native_value = self._client.get_external_ip_addr()
+            self._external_ip = self._client.get_external_ip_addr()
         except Exception as e:
             _LOGGER.warning(f"Failed to update device count sensor: {e}")
-            self._attr_native_value = None
+            self._external_ip = None
+    
+    @property
+    def native_value(self):
+        return self._external_ip
     
     @property
     def available(self):
-        return self._attr_native_value is not None
+        return self.native_value is not None
