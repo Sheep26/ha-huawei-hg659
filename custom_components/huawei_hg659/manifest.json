@@ -1,0 +1,12 @@
+{
+  "domain": "huawei_hg659",
+  "name": "Huawei HG659",
+  "codeowners": [
+    "@Sheep26"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/Sheep26/huawei_hg659",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/Sheep26/huawei_hg659/issues",
+  "version": "1.0"
+}

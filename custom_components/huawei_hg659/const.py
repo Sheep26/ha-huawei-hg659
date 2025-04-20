@@ -1,4 +1,4 @@
-DOMAIN = "hg659"
+DOMAIN = "huawei_hg659"
 
 CONF_HOST = "host"
 CONF_USERNAME = "username"
