@@ -89,6 +89,7 @@ class HG659ExternalIPAddrSensor(SensorEntity):
 class HG659Sensor(SensorEntity):
     def __init__(self, coordinator: HG659UpdateCoordinator):
         self._coordinator = coordinator
+        _LOGGER.error(coordinator.data["host"])
         self._attr_name = f"HG659 @ {coordinator.data["host"]}"
         self._attr_unique_id = f"hg659_{coordinator.data["host"]}"
     
