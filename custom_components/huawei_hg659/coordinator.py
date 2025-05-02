@@ -8,6 +8,7 @@ import logging
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.exceptions import ConfigEntryAuthFailed
 
 from .client import HG659Client
 
@@ -44,10 +45,22 @@ class HG659UpdateCoordinator(DataUpdateCoordinator):
     
     async def _async_update_data(self) -> dict:
         try:
+            # Check login
+            login_data = await self._hass.async_add_executor_job(self.client.login)
+            
+            if not login_data["errorCategory"] == "ok":
+                raise ConfigEntryAuthFailed(f"Invalid username or password.")
+
+            # Get data from api.
             device_info = await self._hass.async_add_executor_job(self.client.get_device_info)
             diagnose_internet = await self._hass.async_add_executor_job(self.client.get_diagnose_internet)
             device_count = await self._hass.async_add_executor_job(self.client.get_device_count)
             devices = await self._hass.async_add_executor_job(self.client.get_active_devices)
+            
+            # Logout
+            await self._hass.async_add_executor_job(self.client.logout)
+            
+            # Return data from api.
             return {
                 "host": self.client.host,
                 "connected": True if diagnose_internet["ConnectionStatus"] == "Connected" else False,

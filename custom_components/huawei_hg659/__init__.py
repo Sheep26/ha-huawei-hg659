@@ -44,6 +44,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         client=client
     )
     
+    # Logout.
+    await hass.async_add_executor_job(client.logout)
+    
+    # Store config.
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = HG659UpdateCoordinator(hass, config)
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
